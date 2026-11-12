@@ -1,0 +1,27 @@
+/* Customization variables with built-in defaults */
+.root {
+    -rm-segment-bg: -color-button-bg, #E0E0E0;
+    -rm-segment-border: -color-button-border, #CCCCCC;
+    -rm-segment-bg-hover: -color-button-bg-hover, #CCCCCC;
+    -rm-segment-border-hover: -color-button-border-hover, #AAAAAA;
+    -rm-segment-bg-selected: -color-button-bg-pressed, #999999;
+    -rm-segment-border-selected: -color-button-border-pressed, #888888;
+}
+
+.radial-menu-segment {
+    -fx-fill: -rm-segment-bg;
+    -fx-stroke: -rm-segment-border;
+    -fx-stroke-width: 2;
+}
+
+.radial-menu-segment:hover {
+    -fx-fill: -rm-segment-bg-hover;
+    -fx-stroke: -rm-segment-border-hover;
+    -fx-stroke-width: 2;
+}
+
+.radial-menu-segment:selected {
+    -fx-fill: -rm-segment-bg-selected;
+    -fx-stroke: -rm-segment-border-selected;
+    -fx-stroke-width: 3;
+}
