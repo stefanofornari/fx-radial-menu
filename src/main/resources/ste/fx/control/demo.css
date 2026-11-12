@@ -1,0 +1,15 @@
+.demo-root {
+    -fx-background-color: -color-bg-default;
+}
+
+.demo-center-label {
+    -fx-font-size: 18px;
+    -fx-font-weight: bold;
+    -fx-text-fill: -color-fg-default;
+}
+
+.demo-center-circle {
+    -fx-fill: -color-bg-default;
+    -fx-stroke: -color-border-default;
+    -fx-stroke-width: 2;
+}

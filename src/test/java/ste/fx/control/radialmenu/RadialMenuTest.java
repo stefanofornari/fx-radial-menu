@@ -15,42 +15,42 @@
  */
 package ste.fx.control.radialmenu;
 
-import javafx.scene.Node;
-import javafx.scene.input.MouseEvent;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.assertj.core.api.BDDAssertions.then;
 
 class RadialMenuTest {
 
     @Test
-    void createsSegmentsForEachMenuItem() {
+    void creates_segments_for_each_menu_item() {
         MenuItem<String> item1 = new MenuItem<>("Item 1", null, "action1");
         MenuItem<String> item2 = new MenuItem<>("Item 2", null, "action2");
         MenuItem<String> item3 = new MenuItem<>("Item 3", null, "action3");
 
         RadialMenu menu = new RadialMenu(List.of(item1, item2, item3));
 
-        assertEquals(3, menu.items().size(), "Should create one item per menu item");
+        then(menu.items()).hasSize(3);
     }
 
     @Test
-    void emptyItemsListCreatesNoSegments() {
+    void empty_items_list_creates_no_segments() {
         RadialMenu menu = new RadialMenu(List.of());
-        assertTrue(menu.items().isEmpty(), "Empty items list should produce no items");
+
+        then(menu.items()).isEmpty();
     }
 
     @Test
-    void singleItemCreatesOneSegment() {
+    void single_item_creates_one_segment() {
         MenuItem<String> item = new MenuItem<>("Only", null, "action");
         RadialMenu menu = new RadialMenu(List.of(item));
-        assertEquals(1, menu.items().size());
+
+        then(menu.items()).hasSize(1);
     }
 
     @Test
-    void selectionCallbackReceivesSelectedItemOnClick() {
+    void selection_callback_receives_selected_item_on_click() {
         MenuItem<String> item1 = new MenuItem<>("Item 1", null, "action1");
         MenuItem<String> item2 = new MenuItem<>("Item 2", null, "action2");
 
@@ -58,20 +58,21 @@ class RadialMenuTest {
         RadialMenu menu = new RadialMenu(List.of(item1, item2), selected -> received[0] = selected);
 
         menu.selectItemForTesting(item1);
-        assertSame(item1, received[0], "Callback should receive the clicked item");
+
+        then(received[0]).isSameAs(item1);
     }
 
     @Test
-    void selectionCallbackNotInvokedOnHover() {
+    void selection_callback_not_invoked_on_hover() {
         MenuItem<String> item = new MenuItem<>("Item", null, "action");
         MenuItem<?>[] received = new MenuItem[1];
         RadialMenu menu = new RadialMenu(List.of(item), selected -> received[0] = selected);
 
-        assertNull(received[0], "Callback should not be invoked without click");
+        then(received[0]).isNull();
     }
 
     @Test
-    void nullCallbackIsSafe() {
+    void null_callback_is_safe() {
         MenuItem<String> item = new MenuItem<>("Item", null, "action");
         RadialMenu menu = new RadialMenu(List.of(item), (MenuItemSelectionCallback) null);
 
@@ -80,46 +81,65 @@ class RadialMenuTest {
     }
 
     @Test
-    void callbackCanBeSetAfterConstruction() {
+    void callback_can_be_set_after_construction() {
         MenuItem<String> item = new MenuItem<>("Item", null, "action");
         MenuItem<?>[] received = new MenuItem[1];
         RadialMenu menu = new RadialMenu(List.of(item));
         menu.setSelectionCallback(selected -> received[0] = selected);
 
         menu.selectItemForTesting(item);
-        assertSame(item, received[0]);
+
+        then(received[0]).isSameAs(item);
     }
 
     @Test
-    void clickSelectsItemAndSetsActiveSelection() {
+    void click_selects_item_and_sets_active_selection() {
         MenuItem<String> item1 = new MenuItem<>("Item 1", null, "action1");
         MenuItem<String> item2 = new MenuItem<>("Item 2", null, "action2");
         RadialMenu menu = new RadialMenu(List.of(item1, item2));
 
         menu.selectItemForTesting(item2);
-        assertSame(item2, menu.selectedItem(), "Clicked item should become active selection");
+
+        then(menu.selectedItem()).isSameAs(item2);
     }
 
     @Test
-    void clickingNewItemDeselectsPreviousVisually() {
+    void clicking_new_item_deselects_previous_visually() {
         MenuItem<String> item1 = new MenuItem<>("Item 1", null, "action1");
         MenuItem<String> item2 = new MenuItem<>("Item 2", null, "action2");
         RadialMenu menu = new RadialMenu(List.of(item1, item2));
 
         menu.selectItemForTesting(item1);
-        assertSame(item1, menu.selectedItem());
+        then(menu.selectedItem()).isSameAs(item1);
 
         menu.selectItemForTesting(item2);
-        assertSame(item2, menu.selectedItem());
+        then(menu.selectedItem()).isSameAs(item2);
     }
 
     @Test
-    void clickFiresSelectionCallbackOnce() {
+    void click_fires_selection_callback_once() {
         MenuItem<String> item = new MenuItem<>("Item", null, "action");
         int[] calls = new int[1];
         RadialMenu menu = new RadialMenu(List.of(item), selected -> calls[0]++);
 
         menu.selectItemForTesting(item);
-        assertEquals(1, calls[0], "Selection callback should fire once per selection");
+
+        then(calls[0]).isEqualTo(1);
+    }
+
+    @Test
+    void callback_updates_label_in_demo_pattern() {
+        // This test verifies the demo pattern: callback updates a label
+        MenuItem<String> item1 = new MenuItem<>("Wedge A", "actionA");
+        MenuItem<String> item2 = new MenuItem<>("Wedge B", "actionB");
+
+        String[] label = new String[1];
+        RadialMenu menu = new RadialMenu(List.of(item1, item2), selected -> label[0] = selected.label());
+
+        menu.selectItemForTesting(item1);
+        then(label[0]).isEqualTo("Wedge A");
+
+        menu.selectItemForTesting(item2);
+        then(label[0]).isEqualTo("Wedge B");
     }
 }

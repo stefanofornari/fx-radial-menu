@@ -104,7 +104,7 @@ public interface MenuItemSelectionCallback<T> {
 
 ## CSS Customization Variables
 
-The component uses **looked-up colors** for theming. Define these at the Scene root (`.root`) or component level (`.radial-menu-segment`) to customize appearance.
+The component uses **looked-up colors** for theming. Define these on the `.radial-menu` style class (or any ancestor) to customize appearance.
 
 | Variable | Fallback Chain | Default | Applies To |
 |----------|----------------|---------|------------|
@@ -118,7 +118,7 @@ The component uses **looked-up colors** for theming. Define these at the Scene r
 ### Example: Custom Theme
 
 ```css
-.root {
+.radial-menu {
     -rm-segment-bg: #2D2D2D;
     -rm-segment-border: #444444;
     -rm-segment-bg-hover: #3D3D3D;
@@ -127,6 +127,51 @@ The component uses **looked-up colors** for theming. Define these at the Scene r
     -rm-segment-border-selected: #005A9E;
 }
 ```
+
+### Default Theme (Optional)
+
+For applications not using AtlantaFX, a default theme is provided that defines the `-rm-*` variables with grayscale fallbacks. Load it as a user agent stylesheet:
+
+```java
+import javafx.application.Application;
+
+public class MyApp extends Application {
+    @Override
+    public void start(Stage stage) {
+        // Load default radial menu theme (optional, for non-AtlantaFX apps)
+        Application.setUserAgentStylesheet(
+            getClass().getResource("/ste/fx/control/radialmenu/radial-menu-theme.css").toExternalForm()
+        );
+        // ... rest of your code
+    }
+}
+```
+
+### AtlantaFX Theme (Optional)
+
+For applications using AtlantaFX, an integration theme is provided that maps `-rm-*` variables to AtlantaFX button colors. Load it as a user agent stylesheet **after** setting the AtlantaFX theme:
+
+```java
+import atlantafx.base.theme.PrimerLight;
+import javafx.application.Application;
+
+public class MyApp extends Application {
+    @Override
+    public void start(Stage stage) {
+        // Apply AtlantaFX theme FIRST
+        Application.setUserAgentStylesheet(new PrimerLight().getUserAgentStylesheet());
+
+        // Then load radial menu AtlantaFX integration (optional, but recommended)
+        // This maps -rm-* variables to AtlantaFX button colors
+        Application.setUserAgentStylesheet(
+            getClass().getResource("/ste/fx/control/radialmenu/radial-menu-atlantafx.css").toExternalForm()
+        );
+        // ... rest of your code
+    }
+}
+```
+
+**Note**: The order matters — AtlantaFX theme must be loaded first so its `-color-button-*` variables are defined, then the radial menu integration theme maps them to `-rm-*`.
 
 ## AtlantaFX Theming
 

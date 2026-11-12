@@ -39,7 +39,8 @@ public class RadialMenu extends Pane {
         this.items = FXCollections.observableArrayList(items);
         this.segments = FXCollections.observableArrayList();
         this.selectionCallback = selectionCallback;
-        getStylesheets().add(getClass().getResource("/com/example/radialmenu/radial-menu.css").toExternalForm());
+        getStyleClass().add("radial-menu");
+        getStylesheets().add(getClass().getResource("/ste/fx/control/radialmenu/radial-menu.css").toExternalForm());
         buildSegments();
     }
 

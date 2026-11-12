@@ -1,8 +1,24 @@
+<!--
+  Copyright 2026 the original author or authors from the WakeMeApp project (https://github.com/stefanofornari/WakeMeApp)
+
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+-->
+
 # Coding Standard
 
 ## Purpose
 
-This coding standard applies to the JavaFX UI code in `src/main/java` and to any reuse of the radial-menu component within desktop JavaFX applications.
+This standard applies to all Java source and tests in the `nb-uzzo-workflow` NetBeans module.
 
 ## General Principles
 
@@ -10,25 +26,31 @@ This coding standard applies to the JavaFX UI code in `src/main/java` and to any
 - Keep components small and focused.
 - Favour composition over duplication.
 - Write code that is easy to test.
-- Keep geometry, state transitions, and styling logic explicit.
+- Respect the NetBeans Platform lifecycle and threading rules: UI work on the Event Dispatch Thread, long-running work off it.
 
 ## Java Conventions
 
-- Use package names aligned with the project namespace (`com.example`).
-- Prefer descriptive names for geometry values such as `innerRadius`, `outerRadius`, and `startAngle`.
-- Keep UI helper classes small and scoped to a single visual concern, as shown by the nested `RingSegmentWedge` implementation.
-- Use `final` fields for values that are not meant to change after initialization.
+- Target Java 17 (`maven.compiler.release` in `pom.xml`).
+- Use the `ste.uzzo.nb` package for module code.
+- Prefer `final` classes and fields where inheritance or mutation is not required.
+- Keep NetBeans API registrations (`@NodeFactory.Registration`, `@OnShowing`) on small, dedicated classes.
+- Expose only the package `ste.uzzo.nb` as a public package, as declared in the `nbm-maven-plugin` configuration.
 
 ## Testing Conventions
 
-- [TBD] No automated test framework is currently configured.
-- [TBD] Add targeted JavaFX tests when the component is formalized for reuse.
+ - Use JUnit 5 for tests.
+ - Use AssertJ with BDD style assertions via `then()` rather than `assertThat()`.
+ - Use TestFX for JavaFX UI testing.
+ - Support headless test execution.
+ - Test names must use snake_case format.
+ - Prefer behavior-focused test names.
+ - Use snake_case naming only for test method names.
 
 ## Documentation Conventions
 
-- Document the purpose and geometry of each menu element.
-- Explain hover and pressed interactions when they affect component behavior.
-- Keep the project documentation aligned with the Java 25 and JavaFX 25 configuration.
+- Document public and non-obvious classes and methods with Javadoc.
+- Keep comments focused on intent and rationale, not on restating the code.
+- Update `README.md` when user-visible behaviour or requirements change.
 
 ### Keywords
 - coding-standard
@@ -36,5 +58,3 @@ This coding standard applies to the JavaFX UI code in `src/main/java` and to any
 - style
 - quality
 - testing
-- javafx
-- java25

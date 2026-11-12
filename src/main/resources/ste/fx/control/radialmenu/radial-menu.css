@@ -1,0 +1,26 @@
+.radial-menu {
+    -rm-segment-bg: #E0E0E0;
+    -rm-segment-border: #CCCCCC;
+    -rm-segment-bg-hover: #CCCCCC;
+    -rm-segment-border-hover: #AAAAAA;
+    -rm-segment-bg-selected: #999999;
+    -rm-segment-border-selected: #888888;
+}
+
+.radial-menu-segment {
+    -fx-fill: -rm-segment-bg;
+    -fx-stroke: -rm-segment-border;
+    -fx-stroke-width: 2;
+}
+
+.radial-menu-segment:hover {
+    -fx-fill: -rm-segment-bg-hover;
+    -fx-stroke: -rm-segment-border-hover;
+    -fx-stroke-width: 2;
+}
+
+.radial-menu-segment:selected {
+    -fx-fill: -rm-segment-bg-selected;
+    -fx-stroke: -rm-segment-border-selected;
+    -fx-stroke-width: 3;
+}

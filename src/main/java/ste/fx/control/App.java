@@ -23,7 +23,6 @@ import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
-import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.stage.Stage;
 
@@ -31,13 +30,14 @@ public class App extends Application {
 
     @Override
     public void start(Stage primaryStage) {
+        // Apply AtlantaFX theme
         Application.setUserAgentStylesheet(new PrimerLight().getUserAgentStylesheet());
 
         Pane canvasPane = new Pane();
-        canvasPane.setStyle("-fx-background-color: -color-bg-default;");
+        canvasPane.getStyleClass().add("demo-root");
 
         Label centerLabel = new Label("TOUCH");
-        centerLabel.setStyle("-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: -color-fg-default;");
+        centerLabel.getStyleClass().add("demo-center-label");
 
         var items = java.util.List.of(
             new MenuItem<>("Wedge A", "actionA"),
@@ -52,9 +52,8 @@ public class App extends Application {
         });
 
         double innerRadius = 75.0;
-        Circle centerCircle = new Circle(innerRadius, Color.web("-color-bg-default"));
-        centerCircle.setStroke(Color.web("-color-border-default"));
-        centerCircle.setStrokeWidth(2);
+        Circle centerCircle = new Circle(innerRadius);
+        centerCircle.getStyleClass().add("demo-center-circle");
 
         StackPane hubStack = new StackPane(centerCircle, centerLabel);
         hubStack.setPickOnBounds(false);
@@ -68,6 +67,9 @@ public class App extends Application {
         canvasPane.getChildren().addAll(radialMenu, hubStack);
 
         Scene scene = new Scene(canvasPane, 450, 450);
+        // Load radial menu AtlantaFX integration at scene level
+        scene.getStylesheets().add(getClass().getResource("/ste/fx/control/radialmenu/radial-menu-atlantafx.css").toExternalForm());
+        scene.getStylesheets().add(getClass().getResource("/ste/fx/control/demo.css").toExternalForm());
         primaryStage.setTitle("Radial Menu Demo");
         primaryStage.setScene(scene);
         primaryStage.show();

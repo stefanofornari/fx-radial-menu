@@ -1,0 +1,11 @@
+/* Default theme for RadialMenu - can be used as user agent stylesheet */
+/* This defines the -rm-* custom properties with fallback to AtlantaFX button colors */
+
+.root {
+    -rm-segment-bg: -color-button-bg, #E0E0E0;
+    -rm-segment-border: -color-button-border, #CCCCCC;
+    -rm-segment-bg-hover: -color-button-bg-hover, #CCCCCC;
+    -rm-segment-border-hover: -color-button-border-hover, #AAAAAA;
+    -rm-segment-bg-selected: -color-button-bg-pressed, #999999;
+    -rm-segment-border-selected: -color-button-border-pressed, #888888;
+}

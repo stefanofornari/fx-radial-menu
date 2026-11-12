@@ -1,27 +1,56 @@
+<!--
+  Copyright 2026 the original author or authors from the WakeMeApp project (https://github.com/stefanofornari/WakeMeApp)
+
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+-->
+
 # Development Framework
 
 ## Purpose
 
-This project is built as a JavaFX desktop component and is intended to be run directly from Maven for local validation and integration into JavaFX applications.
+How `WakeMeUp` is built, tested, and installed.
 
 ## Technology Stack
 
 - **Language / Runtime**: Java 25
-- **Frameworks / Libraries**: JavaFX 25, OpenJFX Controls, AtlantaFX
+- **Frameworks / Libraries**: AtlantaFX, Ikonli Swing and Material Design 2 icon packs (`12.3.1`)
 - **Build Tool**: Maven
-- **Test Tools**: [TBD] — no automated test suite is configured yet
+- **Test Tools**: 
+  - JUnit 5 (`5.10.2`), 
+  - AssertJ (`3.27.7`), 
+  - com.github.stefanofornari:xtest (https://github.com/stefanofornari/xtest)
+  - Maven Surefire 3.2.5
+- **HTTP Client**: JDK Http Client
+- **Logging**: `java.util.logging`, no logging framework or facade (no SLF4J, Logback, Log4j)
+- **Configuration**: what the JDK provides (`java.util.Properties`, `java.util.prefs`) or Apache Commons Configuration; no other configuration library
 
 ## Development Workflow
 
-- Keep the radial-menu geometry and interaction state explicit in the JavaFX view code.
-- Validate the UI visually by running the sample application.
-- Add automated tests when the component is formalized for reuse across applications.
+- Follow TDD (see coding_standard.md)
+- Verify changes with `mvn clean package` before handing them over.
+
+## Network testing harness
+- In the need to access external services via HTTP APIs requests, create testing
+  doubles, possibly that do not require network access
+  - if the client used is a java.net.http.HttpClient, use xtes's ste.xtest.net.http
+    package to create stubs
+  - if the other cases use WireMock (https://github.com/wiremock/wiremock)
 
 ## Build and Execution
 
 - **Build**: `mvn clean package`
 - **Test**: `mvn test`
-- **Run**: `mvn javafx:run`
+- **Run**: run as standalone javafx application
 
 ### Keywords
 - development-framework
@@ -29,5 +58,3 @@ This project is built as a JavaFX desktop component and is intended to be run di
 - build
 - testing
 - workflow
-- javafx
-- java25

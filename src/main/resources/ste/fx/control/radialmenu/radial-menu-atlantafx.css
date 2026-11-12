@@ -1,0 +1,12 @@
+/* AtlantaFX integration theme for RadialMenu */
+/* Load this as a user agent stylesheet when using AtlantaFX themes */
+/* This defines -rm-* custom properties using AtlantaFX button looked-up colors */
+
+.root {
+    -rm-segment-bg: -color-button-bg;
+    -rm-segment-border: -color-button-border;
+    -rm-segment-bg-hover: -color-button-bg-hover;
+    -rm-segment-border-hover: -color-button-border-hover;
+    -rm-segment-bg-selected: -color-button-bg-pressed;
+    -rm-segment-border-selected: -color-button-border-pressed;
+}
