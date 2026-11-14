@@ -37,6 +37,7 @@
 - 2026-11-14: Added `openjfx-monocle` as a test dependency so CSS-driven scenarios can run headless.
 - 2026-11-14: 31 tests green under `mvn clean package`; marked US-000007 DONE.
 - 2026-11-14: Reduced the component hub radius from 75 to 60 (20%) so wedges reach the centre circle; label anchors follow the new band.
+- 2026-11-14: Reworked icon/label stacking so the pair is centred as one unit, icons reset their transforms on every rebuild, and labels disappear when the usable box is under 10 px.
 
 ## Decisions / Trade-offs
 - Labels live in a single mouse-transparent `Group` child of the menu; per-wedge `Group`s centre content on the mid-angle anchor.

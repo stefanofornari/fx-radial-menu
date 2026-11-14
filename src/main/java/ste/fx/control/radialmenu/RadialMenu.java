@@ -49,6 +49,7 @@ public class RadialMenu extends Pane {
     private static final double ICON_GAP = 2.0;
     private static final double ICON_HEIGHT_RATIO = 0.45;
     private static final double MIN_LABEL_FONT_RATIO = 0.7;
+    private static final double MIN_LABEL_BOX = 10.0;
     private static final String ELLIPSIS = "\u2026";
     private static final PseudoClass SELECTED_PSEUDO_CLASS = PseudoClass.getPseudoClass("selected");
 
@@ -269,27 +270,28 @@ public class RadialMenu extends Pane {
         if (icon == null) {
             group.getChildren().add(label);
             labels.add(label);
+            label.setX(-label.getLayoutBounds().getMinX());
+            label.setY(0.0);
             return group;
         }
 
+        resetIcon(icon);
         Bounds naturalIcon = icon.getLayoutBounds();
-        double combinedIconHeight = Math.max(0.0, maxHeight * ICON_HEIGHT_RATIO - ICON_GAP);
-        boolean iconFitsCombined = naturalIcon.getWidth() <= maxWidth
-                && naturalIcon.getHeight() <= combinedIconHeight;
+        double iconAreaHeight = Math.max(0.0, maxHeight * ICON_HEIGHT_RATIO - ICON_GAP);
+        boolean iconFitsAboveLabel = naturalIcon.getWidth() <= maxWidth
+                && naturalIcon.getHeight() <= iconAreaHeight;
 
-        if (label == null) {
+        if (label == null || !iconFitsAboveLabel) {
             Bounds iconBounds = scaleIcon(icon, maxWidth, maxHeight);
             group.getChildren().add(icon);
             placeInGroup(icon, iconBounds, 0.0, 0.0);
             return group;
         }
 
-        Bounds iconBounds = iconFitsCombined
-                ? scaleIcon(icon, maxWidth, combinedIconHeight)
-                : icon.getBoundsInParent();
-        boolean fitsTogether = iconFitsCombined
-                && iconBounds.getHeight() + ICON_GAP + label.getLayoutBounds().getHeight() <= maxHeight
-                && Math.max(iconBounds.getWidth(), label.getLayoutBounds().getWidth()) <= maxWidth;
+        Bounds iconBounds = scaleIcon(icon, maxWidth, iconAreaHeight);
+        Bounds textBounds = label.getLayoutBounds();
+        boolean fitsTogether = iconBounds.getHeight() + ICON_GAP + textBounds.getHeight() <= maxHeight
+                && Math.max(iconBounds.getWidth(), textBounds.getWidth()) <= maxWidth;
         if (!fitsTogether) {
             iconBounds = scaleIcon(icon, maxWidth, maxHeight);
             group.getChildren().add(icon);
@@ -297,30 +299,31 @@ public class RadialMenu extends Pane {
             return group;
         }
 
+        double contentWidth = Math.max(iconBounds.getWidth(), textBounds.getWidth());
+        label.setX((contentWidth - textBounds.getWidth()) / 2.0 - textBounds.getMinX());
+        label.setY(0.0);
+        double iconX = (contentWidth - iconBounds.getWidth()) / 2.0;
+        double iconY = textBounds.getMinY() - ICON_GAP - iconBounds.getHeight();
+        placeInGroup(icon, iconBounds, iconX, iconY);
         group.getChildren().add(icon);
-        if (label != null) {
-            group.getChildren().add(label);
-            labels.add(label);
-            Bounds textBounds = label.getLayoutBounds();
-            double contentWidth = Math.max(iconBounds.getWidth(), textBounds.getWidth());
-            double textX = (contentWidth - textBounds.getWidth()) / 2.0 - textBounds.getMinX();
-            double baselineY = 0.0;
-            label.setX(textX);
-            label.setY(baselineY);
-            double iconX = (contentWidth - iconBounds.getWidth()) / 2.0;
-            double iconY = textBounds.getMinY() - ICON_GAP - iconBounds.getHeight();
-            placeInGroup(icon, iconBounds, iconX, iconY);
-        }
+        group.getChildren().add(label);
+        labels.add(label);
         return group;
     }
 
     private Text createLabelText(String label, double maxWidth, double maxHeight) {
+        if (maxWidth < MIN_LABEL_BOX || maxHeight < MIN_LABEL_BOX) {
+            return null;
+        }
         double baseSize = labelFontSize();
         Font font = Font.font(baseSize);
         String shown = label;
 
         if (!fontSizeExplicitlySet() && !fits(label, font, maxWidth, maxHeight)) {
             font = Font.font(baseSize * MIN_LABEL_FONT_RATIO);
+        }
+        if (measure(label, font).getHeight() > maxHeight) {
+            return null;
         }
         if (!fits(shown, font, maxWidth, maxHeight)) {
             shown = ellipsize(label, font, maxWidth);
@@ -359,6 +362,15 @@ public class RadialMenu extends Pane {
         }
         if (low == 0) return "";
         return value.substring(0, low).stripTrailing() + ELLIPSIS;
+    }
+
+    private void resetIcon(Node icon) {
+        icon.setLayoutX(0.0);
+        icon.setLayoutY(0.0);
+        icon.setTranslateX(0.0);
+        icon.setTranslateY(0.0);
+        icon.setScaleX(1.0);
+        icon.setScaleY(1.0);
     }
 
     private Bounds scaleIcon(Node icon, double maxWidth, double maxHeight) {

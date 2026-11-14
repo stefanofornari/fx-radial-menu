@@ -298,4 +298,84 @@ class RadialMenuLabelsTest {
         then(icon.getBoundsInParent().getWidth()).isLessThanOrEqualTo(130.0);
         then(icon.getBoundsInParent().getHeight()).isLessThanOrEqualTo(67.0);
     }
+
+    @Test
+    void icon_and_label_are_a_centred_unit_at_every_diameter() {
+        Circle icon = new Circle(3);
+        MenuItem<String> withIcon = new MenuItem<>("Code", icon, "code");
+        RadialMenu menu = new RadialMenu(List.of(withIcon, item("Story"), item("Code"), item("Explore")));
+
+        for (double diameter : new double[]{270.0, 180.0, 120.0}) {
+            menu.diameter(diameter);
+            menu.resize(diameter, diameter);
+            menu.layout();
+
+            Text label = menu.labels().get(0);
+            Group group = (Group) label.getParent();
+            Bounds textBounds = label.getBoundsInParent();
+            Bounds iconBounds = icon.getBoundsInParent();
+
+            then(iconBounds.getMinX() + iconBounds.getWidth() / 2.0)
+                    .isCloseTo(textBounds.getMinX() + textBounds.getWidth() / 2.0, within(0.5));
+            then(iconBounds.getMaxY()).isLessThanOrEqualTo(textBounds.getMinY() + 0.01);
+
+            double outer = diameter / 2.0;
+            double inner = outer * 60.0 / 135.0;
+            double radius = inner + 0.5 * (outer - inner);
+            Point2D expected = new Point2D(
+                    diameter / 2.0 + radius * Math.cos(Math.toRadians(-45.0)),
+                    diameter / 2.0 + radius * Math.sin(Math.toRadians(-45.0)));
+            Bounds groupBounds = group.getLayoutBounds();
+            Point2D center = new Point2D(
+                    group.getLayoutX() + groupBounds.getMinX() + groupBounds.getWidth() / 2.0,
+                    group.getLayoutY() + groupBounds.getMinY() + groupBounds.getHeight() / 2.0);
+            then(center.distance(expected)).isLessThan(0.5);
+        }
+    }
+
+    @Test
+    void reused_icons_are_rebuilt_cleanly_after_multiple_resizes() {
+        Circle icon = new Circle(3);
+        MenuItem<String> withIcon = new MenuItem<>("Code", icon, "code");
+        RadialMenu menu = new RadialMenu(List.of(withIcon, item("Story"), item("Code"), item("Explore")));
+
+        menu.diameter(60.0);
+        menu.diameter(270.0);
+        menu.resize(270, 270);
+        menu.layout();
+
+        Text label = menu.labels().get(0);
+        Group group = (Group) label.getParent();
+        Bounds iconBounds = icon.getBoundsInParent();
+        Bounds groupBounds = group.getLayoutBounds();
+
+        then(iconBounds.getMinX()).isGreaterThanOrEqualTo(groupBounds.getMinX() - 0.01);
+        then(iconBounds.getMaxX()).isLessThanOrEqualTo(groupBounds.getMaxX() + 0.01);
+        then(iconBounds.getMinY()).isGreaterThanOrEqualTo(groupBounds.getMinY() - 0.01);
+        then(iconBounds.getMaxY()).isLessThanOrEqualTo(groupBounds.getMaxY() + 0.01);
+    }
+
+    @Test
+    void text_disappears_when_the_wedge_is_too_small() {
+        Circle icon = new Circle(3);
+        MenuItem<String> withIcon = new MenuItem<>("Code", icon, "code");
+        RadialMenu menu = new RadialMenu(List.of(withIcon));
+
+        menu.diameter(60.0);
+
+        then(menu.labels()).isEmpty();
+        then(menu.labelLayer().getChildren()).hasSize(1);
+        then(((Group) menu.labelLayer().getChildren().get(0)).getChildren()).containsExactly(icon);
+        then(icon.getScaleX()).isEqualTo(icon.getScaleY());
+    }
+
+    @Test
+    void text_only_wedges_vanish_when_too_small() {
+        RadialMenu menu = new RadialMenu(List.of(item("Code")));
+
+        menu.diameter(60.0);
+
+        then(menu.labels()).isEmpty();
+        then(menu.labelLayer().getChildren()).isEmpty();
+    }
 }

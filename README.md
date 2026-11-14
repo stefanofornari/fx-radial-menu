@@ -145,7 +145,7 @@ radialMenu.diameterProperty().bind(promptInput.heightProperty());
 
 ### Labels
 
-Each item's label is drawn upright at its wedge's mid-angle, centred on the label anchor. Labels are mouse-transparent, so clicking or hovering a label behaves exactly like clicking or hovering its wedge. When an item has an icon, the icon is shown above the label if both fit, otherwise the icon is shown alone. Labels shrink to 70% of the base font size before being truncated with an ellipsis.
+Each item's label is drawn upright at its wedge's mid-angle, centred on the label anchor. Labels are mouse-transparent, so clicking or hovering a label behaves exactly like clicking or hovering its wedge. When an item has an icon, the icon is shown above the label if both fit, otherwise the icon is shown alone. Labels shrink to 70% of the base font size before being truncated with an ellipsis. Icon and label are centred as a single unit, icon above label; when the wedge's usable box becomes too small, the text is dropped and only the icon (if any) remains.
 
 ### Example: Custom Theme
 
