@@ -3,6 +3,7 @@
 /* This defines -rm-* custom properties using AtlantaFX button looked-up colors */
 
 .root {
+    -rm-label-fill: -color-fg-default;
     -rm-segment-bg: -color-button-bg;
     -rm-segment-border: -color-button-border;
     -rm-segment-bg-hover: -color-button-bg-hover;

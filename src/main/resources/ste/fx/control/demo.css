@@ -13,3 +13,7 @@
     -fx-stroke: -color-border-default;
     -fx-stroke-width: 2;
 }
+
+.demo-item-icon {
+    -fx-fill: -color-accent-emphasis;
+}

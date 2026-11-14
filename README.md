@@ -10,7 +10,7 @@ A reusable JavaFX radial menu component with AtlantaFX theming support.
 <dependency>
     <groupId>com.github.stefanofornari</groupId>
     <artifactId>fx-radial-menu</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <version>0.0.0-SNAPSHOT</version>
 </dependency>
 ```
 
@@ -67,9 +67,17 @@ Extends `Pane`. Renders menu items as wedge-shaped segments around a central hub
 | Method | Return Type | Description |
 |--------|-------------|-------------|
 | `setSelectionCallback(MenuItemSelectionCallback<T> callback)` | `void` | Sets or updates the selection callback |
-| `getSelectedItem()` | `MenuItem<T>` | Returns the currently selected item (null if none) |
-| `getItems()` | `ObservableList<MenuItem<T>>` | Returns the list of menu items |
-| `getSegments()` | `ObservableList<Node>` | Returns the visual segment nodes |
+| `selectedItem()` | `MenuItem<T>` | Returns the currently selected item (null if none) |
+| `items()` | `ObservableList<MenuItem<T>>` | Returns the list of menu items |
+| `labels()` | `ObservableList<Text>` | Returns the label text nodes, in item order |
+| `diameterProperty()` | `DoubleProperty` | Overall circular footprint (default `270`); bindable |
+| `diameter()` / `diameter(double)` | `double` / `void` | Reads or sets the diameter; non-positive values render no wedges |
+| `innerRadiusRatioProperty()` | `DoubleProperty` | Hub opening relative to the outer radius (default `60 / 135`); clamped to `[0, 1)` |
+| `innerRadiusRatio()` / `innerRadiusRatio(double)` | `double` / `void` | Reads or sets the hub ratio |
+| `labelRadiusRatioProperty()` | `DoubleProperty` | Label distance ratio within the radial band (default `0.5`) |
+| `labelRadiusRatio()` / `labelRadiusRatio(double)` | `double` / `void` | Reads or sets the label distance ratio; values are clamped to `[0, 1]` |
+| `labelFontSizeProperty()` | `DoubleProperty` | Base label font size (default `13.5`, i.e. diameter x 0.05) |
+| `labelFontSize()` / `labelFontSize(double)` | `double` / `void` | Reads or sets the base label font size |
 
 ### `MenuItem<T>`
 
@@ -114,6 +122,30 @@ The component uses **looked-up colors** for theming. Define these on the `.radia
 | `-rm-segment-border-hover` | → `-color-button-border-hover` → `#AAAAAA` | Darker gray | Segment stroke (hover) |
 | `-rm-segment-bg-selected` | → `-color-button-bg-pressed` → `#999999` | Dark gray | Segment fill (selected) |
 | `-rm-segment-border-selected` | → `-color-button-border-pressed` → `#888888` | Darker gray | Segment stroke (selected) |
+| `-rm-label-fill` | → `-color-fg-default` | Theme text colour | Label text fill |
+
+### Styleable Label Properties
+
+Label sizing values are set through JavaFX styleable properties, not looked-up colours:
+
+| CSS Property | Java Property | Default | Description |
+|--------------|---------------|---------|-------------|
+| `-rm-label-radius-ratio` | `labelRadiusRatio` | `0.5` | Label distance within the band (`0` = inner radius, `1` = outer radius) |
+| `-rm-label-font-size` | `labelFontSize` | `diameter x 0.05` | Base label font size in pixels |
+
+The default font size follows the current diameter. Explicitly setting `-rm-label-font-size` in CSS fixes the size and disables automatic shrinking; overflowing labels are truncated with an ellipsis instead.
+
+### Sizing
+
+The control's footprint is driven by the bindable `diameter` property, and its hub by `innerRadiusRatio` (outer radius = `diameter / 2`, inner radius = outer radius x ratio). All wedges, hub, and labels scale when either property changes; layout bounds stay exactly `[0, 0, diameter, diameter]` and hover/selection never change the footprint. Content is clipped to that square, and segment strokes are a uniform 2 px in normal, hover, and selected states.
+
+```java
+radialMenu.diameterProperty().bind(promptInput.heightProperty());
+```
+
+### Labels
+
+Each item's label is drawn upright at its wedge's mid-angle, centred on the label anchor. Labels are mouse-transparent, so clicking or hovering a label behaves exactly like clicking or hovering its wedge. When an item has an icon, the icon is shown above the label if both fit, otherwise the icon is shown alone. Labels shrink to 70% of the base font size before being truncated with an ellipsis.
 
 ### Example: Custom Theme
 

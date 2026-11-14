@@ -11,6 +11,8 @@
 | radial-menu/US-000002 | Support hover and click interactions for radial menu items | DONE |
 | radial-menu/US-000004 | Integrate AtlantaFX theming for consistent visual style | DONE |
 | radial-menu/US-000005 | Expose CSS customization variables for easy theming | DONE |
+| radial-menu/US-000007 | Render menu item labels in wedges | DONE |
+| radial-menu/US-000008 | Expose bindable diameter and hub ratio for runtime sizing | DONE |
 
 ## demo
 | id | title | status |

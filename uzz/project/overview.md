@@ -3,7 +3,7 @@
 ## Identity
 
 - **Name**: continuous-radial-menu
-- **Version**: 1.0-SNAPSHOT
+- **Version**: 0.0.0-SNAPSHOT
 - **Summary**: JavaFX radial menu component that arranges action options as wedge-shaped segments around a central hub for desktop applications.
 
 ## Team & Roles

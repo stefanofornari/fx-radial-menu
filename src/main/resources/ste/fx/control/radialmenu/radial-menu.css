@@ -22,5 +22,9 @@
 .radial-menu-segment:selected {
     -fx-fill: -rm-segment-bg-selected;
     -fx-stroke: -rm-segment-border-selected;
-    -fx-stroke-width: 3;
+    -fx-stroke-width: 2;
+}
+
+.radial-menu-label {
+    -fx-fill: -rm-label-fill;
 }
