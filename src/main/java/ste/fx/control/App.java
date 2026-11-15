@@ -31,6 +31,14 @@ import javafx.stage.Stage;
 
 public class App extends Application {
 
+    private static final double MAX_DIAMETER = 360;
+    // space reserved at the bottom for the sliders, labels and checkbox
+    private static final double CONTROLS_HEIGHT = 140;
+    private static final double MARGIN = 10;
+    private static final double SCENE_WIDTH = 500;
+    // the largest menu fits above the controls without overlapping them
+    private static final double SCENE_HEIGHT = MAX_DIAMETER + CONTROLS_HEIGHT + 2 * MARGIN;
+
     @Override
     public void start(Stage primaryStage) {
         // Apply AtlantaFX theme
@@ -56,7 +64,7 @@ public class App extends Application {
             centerLabel.setText(selected.label());
         });
 
-        Slider sizeSlider = new Slider(120, 360, 270);
+        Slider sizeSlider = new Slider(120, MAX_DIAMETER, 270);
         sizeSlider.setPrefWidth(220);
         radialMenu.diameterProperty().bind(sizeSlider.valueProperty());
 
@@ -80,8 +88,6 @@ public class App extends Application {
 
         CheckBox hubCheck = new CheckBox("Show hub");
         hubCheck.setSelected(true);
-        hubCheck.setLayoutX(10);
-        hubCheck.setLayoutY(10);
         radialMenu.hubVisibleProperty().bind(hubCheck.selectedProperty());
         // hiding the hub also hides the centre circle and its label
         hubStack.visibleProperty().bind(radialMenu.hubVisibleProperty());
@@ -89,13 +95,16 @@ public class App extends Application {
 
         radialMenu.layoutXProperty().bind(
                 canvasPane.widthProperty().divide(2).subtract(radialMenu.diameterProperty().divide(2)));
+        // the menu is centred in the area above the controls
         radialMenu.layoutYProperty().bind(
-                canvasPane.heightProperty().divide(2).subtract(radialMenu.diameterProperty().divide(2)));
+                canvasPane.heightProperty().subtract(CONTROLS_HEIGHT).divide(2)
+                        .subtract(radialMenu.diameterProperty().divide(2)));
 
         hubStack.layoutXProperty().bind(
                 canvasPane.widthProperty().divide(2).subtract(centerCircle.radiusProperty()));
         hubStack.layoutYProperty().bind(
-                canvasPane.heightProperty().divide(2).subtract(centerCircle.radiusProperty()));
+                canvasPane.heightProperty().subtract(CONTROLS_HEIGHT).divide(2)
+                        .subtract(centerCircle.radiusProperty()));
 
         sizeSlider.layoutXProperty().bind(canvasPane.widthProperty().divide(2).subtract(110));
         sizeSlider.layoutYProperty().bind(canvasPane.heightProperty().subtract(105));
@@ -107,15 +116,22 @@ public class App extends Application {
         hubValue.layoutXProperty().bind(canvasPane.widthProperty().divide(2).subtract(45));
         hubValue.layoutYProperty().bind(canvasPane.heightProperty().subtract(80));
 
+        // to the right of the hub slider (which spans centre -110 .. +110)
+        hubCheck.layoutXProperty().bind(canvasPane.widthProperty().divide(2).add(120));
+        hubCheck.layoutYProperty().bind(canvasPane.heightProperty().subtract(58));
+
         canvasPane.getChildren().addAll(radialMenu, hubStack, hubCheck, sizeSlider, sizeValue, hubSlider, hubValue);
 
-        Scene scene = new Scene(canvasPane, 450, 450);
+        Scene scene = new Scene(canvasPane, SCENE_WIDTH, SCENE_HEIGHT);
         // Load radial menu AtlantaFX integration at scene level
         scene.getStylesheets().add(getClass().getResource("/ste/fx/control/radialmenu/radial-menu-atlantafx.css").toExternalForm());
         scene.getStylesheets().add(getClass().getResource("/ste/fx/control/demo.css").toExternalForm());
         primaryStage.setTitle("Radial Menu Demo");
         primaryStage.setScene(scene);
         primaryStage.show();
+        // never let the window shrink below the size that shows every widget
+        primaryStage.setMinWidth(primaryStage.getWidth());
+        primaryStage.setMinHeight(primaryStage.getHeight());
     }
 
     public static void main(String[] args) {
