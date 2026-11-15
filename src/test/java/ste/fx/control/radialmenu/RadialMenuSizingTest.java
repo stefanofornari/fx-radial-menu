@@ -91,10 +91,10 @@ class RadialMenuSizingTest {
         then(menu.getLayoutBounds()).isEqualTo(new BoundingBox(0, 0, 270, 270));
         then(menu.getClip()).isInstanceOf(Rectangle.class);
         Rectangle clip = (Rectangle) menu.getClip();
-        then(clip.getX()).isZero();
-        then(clip.getY()).isZero();
-        then(clip.getWidth()).isEqualTo(270.0);
-        then(clip.getHeight()).isEqualTo(270.0);
+        then(clip.getX()).isEqualTo(-1.0);
+        then(clip.getY()).isEqualTo(-1.0);
+        then(clip.getWidth()).isEqualTo(272.0);
+        then(clip.getHeight()).isEqualTo(272.0);
     }
 
     @Test

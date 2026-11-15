@@ -33,7 +33,7 @@
 ## Decisions / Trade-offs
 - `diameter` stores non-negative values through its setter; bound negative values are clamped at use so the control never sizes below zero.
 - `innerRadiusRatio` clamps in `set` and also in `get`, so a bound out-of-range value still reports a valid ratio to callers.
-- The clip is a square rather than a circle: it keeps the layout bounds contract, and outer rim strokes are shaved rather than expanding the footprint.
+- The clip is a square rather than a circle: it keeps the layout bounds contract, and it is padded by 1 px so the 2 px rim stroke renders fully instead of being shaved.
 - Derived label font updates skip explicitly set and bound font sizes.
 
 ### Keywords

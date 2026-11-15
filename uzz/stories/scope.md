@@ -21,7 +21,7 @@ This scope covers FR-2 from the feature-request library: making the control's ov
   - [ ] Rebuild or rescale all geometry whenever `diameter` or `innerRadiusRatio` changes so wedges, hub opening, and labels remain circular and scale proportionally.
   - [ ] Set `prefWidth`, `prefHeight`, `minWidth`, `minHeight`, `maxWidth`, and `maxHeight` to the current diameter so the control has a fixed, square footprint.
   - [ ] Report layout bounds exactly `[0, 0, diameter, diameter]`, with no negative-coordinate geometry and no child painting that extends the footprint.
-  - [ ] Clip rendered content to the `[0, 0, diameter, diameter]` square so the outer stroke cannot enlarge or shift the layout bounds.
+  - [ ] Clip rendered content to a square padded by half the segment stroke around `[0, 0, diameter, diameter]` so the outer stroke renders fully without enlarging or shifting the layout bounds.
   - [ ] Use a uniform 2 px stroke for normal, hover, and selected states; hover and selection remain distinguishable through their fill and border colours rather than stroke width.
   - [ ] Keep layout bounds unchanged across hover and selection transitions.
   - [ ] Render no wedges for a non-positive diameter, and make the measured width and height track the (non-negative) diameter.

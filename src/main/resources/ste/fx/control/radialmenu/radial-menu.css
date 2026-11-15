@@ -1,10 +1,15 @@
-.radial-menu {
+/* Built-in defaults; lower specificity than the .radial-menu class so
+   applications and theme files can override them from their own stylesheets. */
+RadialMenu {
     -rm-segment-bg: #E0E0E0;
     -rm-segment-border: #CCCCCC;
     -rm-segment-bg-hover: #CCCCCC;
     -rm-segment-border-hover: #AAAAAA;
     -rm-segment-bg-selected: #999999;
     -rm-segment-border-selected: #888888;
+    -rm-label-fill: #333333;
+    -rm-label-fill-hover: #333333;
+    -rm-label-fill-selected: #FFFFFF;
 }
 
 .radial-menu-segment {
@@ -27,4 +32,12 @@
 
 .radial-menu-label {
     -fx-fill: -rm-label-fill;
+}
+
+.radial-menu-label-group:hover .radial-menu-label {
+    -fx-fill: -rm-label-fill-hover;
+}
+
+.radial-menu-label-group:selected .radial-menu-label {
+    -fx-fill: -rm-label-fill-selected;
 }

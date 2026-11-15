@@ -38,13 +38,14 @@
 - 2026-11-14: 31 tests green under `mvn clean package`; marked US-000007 DONE.
 - 2026-11-14: Reduced the component hub radius from 75 to 60 (20%) so wedges reach the centre circle; label anchors follow the new band.
 - 2026-11-14: Reworked icon/label stacking so the pair is centred as one unit, icons reset their transforms on every rebuild, and labels disappear when the usable box is under 10 px.
+- 2026-11-15: Added `-rm-label-fill-hover` / `-rm-label-fill-selected` hooks and propagated the wedge `:hover` and `:selected` pseudo-classes to per-wedge label groups; covered state colours in tests and README.
 
 ## Decisions / Trade-offs
 - Labels live in a single mouse-transparent `Group` child of the menu; per-wedge `Group`s centre content on the mid-angle anchor.
 - Font size and radius ratio are implemented as CSS metadata properties (looked-up colours cannot carry sizes).
 - Fit uses the chord width at the label radius and the radial band depth as the usable box, with a safety margin.
 - Explicit font size is detected by writes through the setter or through CSS application; the untouched default remains shrinkable.
-- `-rm-label-fill` has no default in the component stylesheet, so an author rule on `.radial-menu` wins; without a theme the text keeps the JavaFX default fill and CSS logs an unresolved-variable warning.
+- `-rm-label-fill` now has built-in grayscale defaults on the low-specificity `RadialMenu` type selector, so author `.radial-menu` rules win; `-rm-label-fill-hover` and `-rm-label-fill-selected` are applied through pseudo-classes on the per-wedge label group.
 - Icon and label share a wedge only when the icon fits the combined icon area at natural size; otherwise the label is dropped and the icon scales alone in the full label box.
 
 ### Keywords

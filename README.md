@@ -112,17 +112,21 @@ public interface MenuItemSelectionCallback<T> {
 
 ## CSS Customization Variables
 
-The component uses **looked-up colors** for theming. Define these on the `.radial-menu` style class (or any ancestor) to customize appearance.
+The component uses **looked-up colors** for theming. Define these on the `.radial-menu` style class (or any ancestor) to customize appearance. Rules added to the `Scene` or a custom stylesheet override the built-in defaults.
 
-| Variable | Fallback Chain | Default | Applies To |
-|----------|----------------|---------|------------|
-| `-rm-segment-bg` | → `-color-button-bg` → `#E0E0E0` | Light gray | Segment fill (default) |
-| `-rm-segment-border` | → `-color-button-border` → `#CCCCCC` | Medium gray | Segment stroke (default) |
-| `-rm-segment-bg-hover` | → `-color-button-bg-hover` → `#CCCCCC` | Medium gray | Segment fill (hover) |
-| `-rm-segment-border-hover` | → `-color-button-border-hover` → `#AAAAAA` | Darker gray | Segment stroke (hover) |
-| `-rm-segment-bg-selected` | → `-color-button-bg-pressed` → `#999999` | Dark gray | Segment fill (selected) |
-| `-rm-segment-border-selected` | → `-color-button-border-pressed` → `#888888` | Darker gray | Segment stroke (selected) |
-| `-rm-label-fill` | → `-color-fg-default` | Theme text colour | Label text fill |
+| Variable | Built-in Default | Applies To |
+|----------|------------------|------------|
+| `-rm-segment-bg` | `#E0E0E0` (light gray) | Segment fill (default) |
+| `-rm-segment-border` | `#CCCCCC` (medium gray) | Segment stroke (default) |
+| `-rm-segment-bg-hover` | `#CCCCCC` (medium gray) | Segment fill (hover) |
+| `-rm-segment-border-hover` | `#AAAAAA` (darker gray) | Segment stroke (hover) |
+| `-rm-segment-bg-selected` | `#999999` (dark gray) | Segment fill (selected) |
+| `-rm-segment-border-selected` | `#888888` (darker gray) | Segment stroke (selected) |
+| `-rm-label-fill` | `#333333` | Label text fill (default) |
+| `-rm-label-fill-hover` | `#333333` | Label text fill (hover) |
+| `-rm-label-fill-selected` | `#FFFFFF` | Label text fill (selected) |
+
+The AtlantaFX integration theme maps every variable to the corresponding `-color-*` token, so the menu follows the active theme automatically.
 
 ### Styleable Label Properties
 
@@ -145,7 +149,7 @@ radialMenu.diameterProperty().bind(promptInput.heightProperty());
 
 ### Labels
 
-Each item's label is drawn upright at its wedge's mid-angle, centred on the label anchor. Labels are mouse-transparent, so clicking or hovering a label behaves exactly like clicking or hovering its wedge. When an item has an icon, the icon is shown above the label if both fit, otherwise the icon is shown alone. Labels shrink to 70% of the base font size before being truncated with an ellipsis. Icon and label are centred as a single unit, icon above label; when the wedge's usable box becomes too small, the text is dropped and only the icon (if any) remains.
+Each item's label is drawn upright at its wedge's mid-angle, centred on the label anchor. Labels are mouse-transparent, so clicking or hovering a label behaves exactly like clicking or hovering its wedge; the label's hover and selected colours follow the wedge state. When an item has an icon, the icon is shown above the label if both fit, otherwise the icon is shown alone. Labels shrink to 70% of the base font size before being truncated with an ellipsis. Icon and label are centred as a single unit, icon above label; when the wedge's usable box becomes too small, the text is dropped and only the icon (if any) remains.
 
 ### Example: Custom Theme
 
@@ -157,12 +161,15 @@ Each item's label is drawn upright at its wedge's mid-angle, centred on the labe
     -rm-segment-border-hover: #555555;
     -rm-segment-bg-selected: #007ACC;
     -rm-segment-border-selected: #005A9E;
+    -rm-label-fill: #F0F0F0;
+    -rm-label-fill-hover: #FFFFFF;
+    -rm-label-fill-selected: #FFFFFF;
 }
 ```
 
 ### Default Theme (Optional)
 
-For applications not using AtlantaFX, a default theme is provided that defines the `-rm-*` variables with grayscale fallbacks. Load it as a user agent stylesheet:
+For applications not using AtlantaFX, a default theme is provided with the same grayscale values as the built-in defaults. Load it as a Scene stylesheet:
 
 ```java
 import javafx.application.Application;
@@ -170,8 +177,9 @@ import javafx.application.Application;
 public class MyApp extends Application {
     @Override
     public void start(Stage stage) {
+        Scene scene = new Scene(root, 450, 450);
         // Load default radial menu theme (optional, for non-AtlantaFX apps)
-        Application.setUserAgentStylesheet(
+        scene.getStylesheets().add(
             getClass().getResource("/ste/fx/control/radialmenu/radial-menu-theme.css").toExternalForm()
         );
         // ... rest of your code
@@ -181,7 +189,7 @@ public class MyApp extends Application {
 
 ### AtlantaFX Theme (Optional)
 
-For applications using AtlantaFX, an integration theme is provided that maps `-rm-*` variables to AtlantaFX button colors. Load it as a user agent stylesheet **after** setting the AtlantaFX theme:
+For applications using AtlantaFX, an integration theme is provided that maps `-rm-*` variables to AtlantaFX button colors. Apply the AtlantaFX theme first, then add the integration stylesheet to the Scene:
 
 ```java
 import atlantafx.base.theme.PrimerLight;
@@ -193,9 +201,10 @@ public class MyApp extends Application {
         // Apply AtlantaFX theme FIRST
         Application.setUserAgentStylesheet(new PrimerLight().getUserAgentStylesheet());
 
-        // Then load radial menu AtlantaFX integration (optional, but recommended)
+        Scene scene = new Scene(root, 450, 450);
+        // Then load the radial menu AtlantaFX integration at scene level
         // This maps -rm-* variables to AtlantaFX button colors
-        Application.setUserAgentStylesheet(
+        scene.getStylesheets().add(
             getClass().getResource("/ste/fx/control/radialmenu/radial-menu-atlantafx.css").toExternalForm()
         );
         // ... rest of your code
@@ -203,21 +212,23 @@ public class MyApp extends Application {
 }
 ```
 
-**Note**: The order matters — AtlantaFX theme must be loaded first so its `-color-button-*` variables are defined, then the radial menu integration theme maps them to `-rm-*`.
+**Note**: The integration theme must be loaded as a Scene (author) stylesheet so it overrides the built-in defaults. Add any application-specific stylesheet after it to override the theme variables.
 
 ## AtlantaFX Theming
 
-The component integrates with [AtlantaFX](https://github.com/mkpaz/atlantafx) themes. By default it uses AtlantaFX button color variables, so it automatically matches your application's theme.
+The component integrates with [AtlantaFX](https://github.com/mkpaz/atlantafx) themes. Load the integration stylesheet (see above) to map the `-rm-*` variables to AtlantaFX button and foreground colors, so the menu matches your application's theme.
 
 ### Style Mapping
 
-The radial menu's visual states map to AtlantaFX button looked-up colors:
+The radial menu's visual states map to AtlantaFX root-level palette tokens:
 
 | Radial Menu State | AtlantaFX Variable | Description |
 |-------------------|-------------------|-------------|
-| Default | `-color-button-bg`, `-color-button-border` | Segment fill & stroke |
-| Hover | `-color-button-bg-hover`, `-color-button-border-hover` | Segment fill & stroke on hover |
-| Selected | `-color-button-bg-pressed`, `-color-button-border-pressed` | Segment fill & stroke when selected |
+| Default | `-color-bg-subtle`, `-color-border-default` | Segment fill & stroke |
+| Hover | `-color-base-1`, `-color-border-default` | Segment fill & stroke on hover |
+| Selected | `-color-accent-emphasis` | Segment fill & stroke when selected |
+| Label (default/hover) | `-color-fg-default` | Label text fill |
+| Label (selected) | `-color-fg-emphasis` | Label text fill on the selected wedge |
 
 ### Using with AtlantaFX
 

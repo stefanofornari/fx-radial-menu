@@ -23,6 +23,7 @@ import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
+import javafx.css.PseudoClass;
 import javafx.scene.shape.Circle;
 import javafx.scene.text.Text;
 import org.junit.jupiter.api.BeforeAll;
@@ -231,6 +232,79 @@ class RadialMenuLabelsTest {
         style(menu, ".radial-menu { -rm-label-fill: red; }");
 
         then(menu.labels()).allMatch(label -> Color.RED.equals(label.getFill()));
+    }
+
+    @Test
+    void built_in_defaults_apply_when_no_variables_are_defined() throws Exception {
+        RadialMenu menu = fourItems();
+
+        style(menu, "");
+
+        then(menu.labels()).allMatch(label -> Color.web("#333333").equals(label.getFill()));
+        then(((javafx.scene.shape.Path) menu.getChildren().get(0)).getFill())
+                .isEqualTo(Color.web("#E0E0E0"));
+        then(((javafx.scene.shape.Path) menu.getChildren().get(0)).getStroke())
+                .isEqualTo(Color.web("#CCCCCC"));
+    }
+
+    @Test
+    void label_fill_is_styleable_on_hover_and_selection() throws Exception {
+        RadialMenu menu = fourItems();
+        style(menu, """
+                .radial-menu {
+                    -rm-label-fill: black;
+                    -rm-label-fill-hover: green;
+                    -rm-label-fill-selected: red;
+                }
+                """);
+
+        Node segment = menu.getChildren().get(0);
+        segment.getOnMouseEntered().handle(null);
+        menu.applyCss();
+        then(menu.labels().get(0).getFill()).isEqualTo(Color.GREEN);
+        then(menu.labels().get(0).getParent().getPseudoClassStates())
+                .contains(PseudoClass.getPseudoClass("hover"));
+
+        segment.getOnMouseExited().handle(null);
+        menu.applyCss();
+        then(menu.labels().get(0).getFill()).isEqualTo(Color.BLACK);
+        then(menu.labels().get(0).getParent().getPseudoClassStates())
+                .doesNotContain(PseudoClass.getPseudoClass("hover"));
+
+        menu.selectItemForTesting(menu.items().get(1));
+        menu.applyCss();
+        then(menu.labels().get(0).getFill()).isEqualTo(Color.BLACK);
+        then(menu.labels().get(1).getFill()).isEqualTo(Color.RED);
+
+        menu.selectItemForTesting(menu.items().get(0));
+        menu.applyCss();
+        then(menu.labels().get(0).getFill()).isEqualTo(Color.RED);
+        then(menu.labels().get(1).getFill()).isEqualTo(Color.BLACK);
+    }
+
+    @Test
+    void selected_segment_background_is_styleable() throws Exception {
+        RadialMenu menu = fourItems();
+        style(menu, ".radial-menu { -rm-segment-bg-selected: blue; }");
+
+        menu.selectItemForTesting(menu.items().get(0));
+        menu.applyCss();
+
+        then(((javafx.scene.shape.Path) menu.getChildren().get(0)).getFill()).isEqualTo(Color.BLUE);
+        then(((javafx.scene.shape.Path) menu.getChildren().get(1)).getFill()).isNotEqualTo(Color.BLUE);
+    }
+
+    @Test
+    void label_state_survives_items_rebuild() {
+        RadialMenu menu = new RadialMenu(List.of(item("Scope"), item("Story")));
+
+        menu.selectItemForTesting(menu.items().get(1));
+        menu.items().add(item("Extra"));
+
+        Text selected = menu.labels().get(1);
+        then(selected.getText()).isEqualTo("Story");
+        then(selected.getParent().getPseudoClassStates())
+                .contains(PseudoClass.getPseudoClass("selected"));
     }
 
     @Test

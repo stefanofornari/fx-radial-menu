@@ -50,8 +50,10 @@ public class RadialMenu extends Pane {
     private static final double ICON_HEIGHT_RATIO = 0.45;
     private static final double MIN_LABEL_FONT_RATIO = 0.7;
     private static final double MIN_LABEL_BOX = 10.0;
+    private static final double SEGMENT_STROKE_WIDTH = 2.0;
     private static final String ELLIPSIS = "\u2026";
     private static final PseudoClass SELECTED_PSEUDO_CLASS = PseudoClass.getPseudoClass("selected");
+    private static final PseudoClass HOVER_PSEUDO_CLASS = PseudoClass.getPseudoClass("hover");
 
     private final ObservableList<MenuItem<?>> items;
     private final ObservableList<Node> segments;
@@ -185,7 +187,10 @@ public class RadialMenu extends Pane {
                         startAngle + (i * angleStep), angleStep);
                 segment.getStyleClass().add("radial-menu-segment");
                 final MenuItem<?> finalItem = item;
+                final int index = i;
                 segment.setOnMouseClicked(e -> selectItem(finalItem));
+                segment.setOnMouseEntered(e -> setLabelPseudoClass(index, HOVER_PSEUDO_CLASS, true));
+                segment.setOnMouseExited(e -> setLabelPseudoClass(index, HOVER_PSEUDO_CLASS, false));
                 if (item == selectedItem) {
                     segment.pseudoClassStateChanged(SELECTED_PSEUDO_CLASS, true);
                 }
@@ -225,10 +230,11 @@ public class RadialMenu extends Pane {
             clip = new Rectangle();
             setClip(clip);
         }
-        clip.setX(0.0);
-        clip.setY(0.0);
-        clip.setWidth(effectiveDiameter);
-        clip.setHeight(effectiveDiameter);
+        double strokePad = SEGMENT_STROKE_WIDTH / 2.0;
+        clip.setX(-strokePad);
+        clip.setY(-strokePad);
+        clip.setWidth(effectiveDiameter + SEGMENT_STROKE_WIDTH);
+        clip.setHeight(effectiveDiameter + SEGMENT_STROKE_WIDTH);
     }
 
     private void buildLabels() {
@@ -250,6 +256,7 @@ public class RadialMenu extends Pane {
             Group wedgeLabel = createWedgeLabel(item, maxWidth, maxHeight);
             if (wedgeLabel != null) {
                 wedgeLabel.setUserData(i);
+                wedgeLabel.pseudoClassStateChanged(SELECTED_PSEUDO_CLASS, item == selectedItem);
                 labelLayer.getChildren().add(wedgeLabel);
             }
         }
@@ -263,6 +270,7 @@ public class RadialMenu extends Pane {
         if (!hasText && icon == null) return null;
 
         Group group = new Group();
+        group.getStyleClass().add("radial-menu-label-group");
         group.setMouseTransparent(true);
         Text label = hasText ? createLabelText(text, maxWidth, maxHeight) : null;
         if (label == null && icon == null) return null;
@@ -424,12 +432,21 @@ public class RadialMenu extends Pane {
 
     private void selectItem(MenuItem<?> item) {
         selectedItem = item;
-        for (Node node : segments) {
-            MenuItem<?> mi = items.get(segments.indexOf(node));
-            node.pseudoClassStateChanged(SELECTED_PSEUDO_CLASS, mi == selectedItem);
+        for (int i = 0; i < segments.size(); i++) {
+            boolean selected = items.get(i) == selectedItem;
+            segments.get(i).pseudoClassStateChanged(SELECTED_PSEUDO_CLASS, selected);
+            setLabelPseudoClass(i, SELECTED_PSEUDO_CLASS, selected);
         }
         if (selectionCallback != null) {
             selectionCallback.onSelection(item);
+        }
+    }
+
+    private void setLabelPseudoClass(int itemIndex, PseudoClass pseudoClass, boolean active) {
+        for (Node labelNode : labelLayer.getChildren()) {
+            if (Integer.valueOf(itemIndex).equals(labelNode.getUserData())) {
+                labelNode.pseudoClassStateChanged(pseudoClass, active);
+            }
         }
     }
 
