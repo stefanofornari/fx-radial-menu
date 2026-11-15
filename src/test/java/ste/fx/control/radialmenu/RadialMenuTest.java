@@ -20,6 +20,7 @@ import org.junit.jupiter.api.Test;
 import java.util.List;
 
 import static org.assertj.core.api.BDDAssertions.then;
+import static ste.fx.control.radialmenu.RadialMenuTestSupport.click;
 
 class RadialMenuTest {
 
@@ -57,7 +58,7 @@ class RadialMenuTest {
         MenuItem<?>[] received = new MenuItem[1];
         RadialMenu menu = new RadialMenu(List.of(item1, item2), selected -> received[0] = selected);
 
-        menu.selectItemForTesting(item1);
+        click(menu, item1);
 
         then(received[0]).isSameAs(item1);
     }
@@ -77,7 +78,7 @@ class RadialMenuTest {
         RadialMenu menu = new RadialMenu(List.of(item), (MenuItemSelectionCallback) null);
 
         // Should not throw
-        menu.selectItemForTesting(item);
+        click(menu, item);
     }
 
     @Test
@@ -87,7 +88,7 @@ class RadialMenuTest {
         RadialMenu menu = new RadialMenu(List.of(item));
         menu.setSelectionCallback(selected -> received[0] = selected);
 
-        menu.selectItemForTesting(item);
+        click(menu, item);
 
         then(received[0]).isSameAs(item);
     }
@@ -98,7 +99,7 @@ class RadialMenuTest {
         MenuItem<String> item2 = new MenuItem<>("Item 2", null, "action2");
         RadialMenu menu = new RadialMenu(List.of(item1, item2));
 
-        menu.selectItemForTesting(item2);
+        click(menu, item2);
 
         then(menu.selectedItem()).isSameAs(item2);
     }
@@ -109,10 +110,10 @@ class RadialMenuTest {
         MenuItem<String> item2 = new MenuItem<>("Item 2", null, "action2");
         RadialMenu menu = new RadialMenu(List.of(item1, item2));
 
-        menu.selectItemForTesting(item1);
+        click(menu, item1);
         then(menu.selectedItem()).isSameAs(item1);
 
-        menu.selectItemForTesting(item2);
+        click(menu, item2);
         then(menu.selectedItem()).isSameAs(item2);
     }
 
@@ -122,7 +123,7 @@ class RadialMenuTest {
         int[] calls = new int[1];
         RadialMenu menu = new RadialMenu(List.of(item), selected -> calls[0]++);
 
-        menu.selectItemForTesting(item);
+        click(menu, item);
 
         then(calls[0]).isEqualTo(1);
     }
@@ -136,10 +137,10 @@ class RadialMenuTest {
         String[] label = new String[1];
         RadialMenu menu = new RadialMenu(List.of(item1, item2), selected -> label[0] = selected.label());
 
-        menu.selectItemForTesting(item1);
+        click(menu, item1);
         then(label[0]).isEqualTo("Wedge A");
 
-        menu.selectItemForTesting(item2);
+        click(menu, item2);
         then(label[0]).isEqualTo("Wedge B");
     }
 }

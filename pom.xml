@@ -21,6 +21,8 @@
             <groupId>org.openjfx</groupId>
             <artifactId>javafx-controls</artifactId>
             <version>${javafx.version}</version>
+            <!-- only the demo App uses controls; the RadialMenu itself needs graphics only -->
+            <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>org.openjfx</groupId>
@@ -31,6 +33,8 @@
             <groupId>io.github.mkpaz</groupId>
             <artifactId>atlantafx-base</artifactId>
             <version>${atlantafx.version}</version>
+            <!-- demo App and theme test only; consumers pick their own theme -->
+            <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>org.junit.jupiter</groupId>

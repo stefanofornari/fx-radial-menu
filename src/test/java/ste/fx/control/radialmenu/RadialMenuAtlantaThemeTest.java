@@ -29,6 +29,7 @@ import org.junit.jupiter.api.Test;
 import java.util.List;
 
 import static org.assertj.core.api.BDDAssertions.then;
+import static ste.fx.control.radialmenu.RadialMenuTestSupport.click;
 
 class RadialMenuAtlantaThemeTest {
 
@@ -71,7 +72,7 @@ class RadialMenuAtlantaThemeTest {
             menu.applyCss();
             then((Color) segment.getFill()).isNotEqualTo(base);
 
-            menu.selectItemForTesting(menu.items().get(0));
+            click(menu, menu.items().get(0));
             segment.pseudoClassStateChanged(PseudoClass.getPseudoClass("hover"), false);
             menu.applyCss();
             then((Color) segment.getFill()).isNotEqualTo(base);

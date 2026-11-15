@@ -35,6 +35,7 @@ import java.util.List;
 
 import static org.assertj.core.api.BDDAssertions.then;
 import static org.assertj.core.api.BDDAssertions.within;
+import static ste.fx.control.radialmenu.RadialMenuTestSupport.click;
 
 class RadialMenuSizingTest {
 
@@ -121,7 +122,7 @@ class RadialMenuSizingTest {
     void diameter_changes_at_runtime_scale_geometry_and_keep_selection() {
         RadialMenu menu = fourItems();
         MenuItem<?> scope = menu.items().get(0);
-        menu.selectItemForTesting(scope);
+        click(menu, scope);
 
         menu.diameter(120);
         menu.resize(120, 120);
@@ -143,7 +144,7 @@ class RadialMenuSizingTest {
         menu.layout();
         Bounds before = menu.getLayoutBounds();
 
-        menu.selectItemForTesting(menu.items().get(2));
+        click(menu, menu.items().get(2));
         menu.layout();
 
         then(menu.getLayoutBounds()).isEqualTo(before);
@@ -197,6 +198,17 @@ class RadialMenuSizingTest {
 
         external.set(-1.0);
         then(menu.innerRadiusRatio()).isZero();
+    }
+
+    @Test
+    void bound_negative_diameter_is_reported_as_zero() {
+        RadialMenu menu = fourItems();
+        SimpleDoubleProperty external = new SimpleDoubleProperty(-50.0);
+
+        menu.diameterProperty().bind(external);
+
+        then(menu.diameter()).isZero();
+        then(menu.prefWidth(-1)).isZero();
     }
 
     @Test
@@ -292,7 +304,7 @@ class RadialMenuSizingTest {
                 selected -> received[0] = selected);
 
         menu.diameter(150);
-        menu.selectItemForTesting(menu.items().get(3));
+        click(menu, menu.items().get(3));
 
         then(received[0]).isSameAs(menu.items().get(3));
         then(menu.selectedItem()).isSameAs(menu.items().get(3));
@@ -305,7 +317,7 @@ class RadialMenuSizingTest {
 
         then(segment(menu, 0).getStrokeWidth()).isEqualTo(2.0);
 
-        menu.selectItemForTesting(menu.items().get(0));
+        click(menu, menu.items().get(0));
         applyCss(menu);
 
         then(segment(menu, 0).getPseudoClassStates()).extracting(pc -> pc.getPseudoClassName()).contains("selected");

@@ -14,6 +14,8 @@ A reusable JavaFX radial menu component with AtlantaFX theming support.
 </dependency>
 ```
 
+The control only needs `javafx-graphics`. AtlantaFX is not pulled in transitively: add `atlantafx-base` yourself if you want to use the AtlantaFX integration theme.
+
 ### Basic Usage
 
 ```java
@@ -35,13 +37,13 @@ public class MyApp extends Application {
             new MenuItem<>("Action C", "actionC")
         );
 
-        RadialMenu<String> menu = new RadialMenu<>(items, selected -> {
+        RadialMenu menu = new RadialMenu(items, selected -> {
             System.out.println("Selected: " + selected.label());
         });
 
         Pane root = new Pane(menu);
-        menu.layoutXProperty().bind(root.widthProperty().divide(2));
-        menu.layoutYProperty().bind(root.heightProperty().divide(2));
+        menu.layoutXProperty().bind(root.widthProperty().subtract(menu.diameterProperty()).divide(2));
+        menu.layoutYProperty().bind(root.heightProperty().subtract(menu.diameterProperty()).divide(2));
 
         stage.setScene(new Scene(root, 400, 400));
         stage.show();
@@ -51,7 +53,7 @@ public class MyApp extends Application {
 
 ## API Reference
 
-### `RadialMenu<T>`
+### `RadialMenu`
 
 Extends `Pane`. Renders menu items as wedge-shaped segments around a central hub.
 
@@ -59,17 +61,17 @@ Extends `Pane`. Renders menu items as wedge-shaped segments around a central hub
 
 | Constructor | Description |
 |-------------|-------------|
-| `RadialMenu(List<MenuItem<T>> items)` | Creates menu with items, no selection callback |
-| `RadialMenu(List<MenuItem<T>> items, MenuItemSelectionCallback<T> callback)` | Creates menu with items and selection callback |
+| `RadialMenu(List<? extends MenuItem<?>> items)` | Creates menu with items, no selection callback |
+| `RadialMenu(List<? extends MenuItem<?>> items, MenuItemSelectionCallback callback)` | Creates menu with items and selection callback |
 
 #### Methods
 
 | Method | Return Type | Description |
 |--------|-------------|-------------|
-| `setSelectionCallback(MenuItemSelectionCallback<T> callback)` | `void` | Sets or updates the selection callback |
-| `selectedItem()` | `MenuItem<T>` | Returns the currently selected item (null if none) |
-| `items()` | `ObservableList<MenuItem<T>>` | Returns the list of menu items |
-| `labels()` | `ObservableList<Text>` | Returns the label text nodes, in item order |
+| `setSelectionCallback(MenuItemSelectionCallback callback)` | `void` | Sets or updates the selection callback |
+| `selectedItem()` | `MenuItem<?>` | Returns the currently selected item (null if none) |
+| `items()` | `ObservableList<MenuItem<?>>` | Returns the list of menu items |
+| `labels()` | `ObservableList<Text>` | Returns a read-only view of the label text nodes, in item order |
 | `diameterProperty()` | `DoubleProperty` | Overall circular footprint (default `270`); bindable |
 | `diameter()` / `diameter(double)` | `double` / `void` | Reads or sets the diameter; non-positive values render no wedges |
 | `innerRadiusRatioProperty()` | `DoubleProperty` | Hub opening relative to the outer radius (default `60 / 135`); clamped to `[0, 1)` |
@@ -99,14 +101,14 @@ new MenuItem<>("Label", "payload");
 new MenuItem<>("Label", iconNode, "payload");
 ```
 
-### `MenuItemSelectionCallback<T>`
+### `MenuItemSelectionCallback`
 
 Functional interface for selection notifications.
 
 ```java
 @FunctionalInterface
-public interface MenuItemSelectionCallback<T> {
-    void onSelection(MenuItem<T> selectedItem);
+public interface MenuItemSelectionCallback {
+    void onSelection(MenuItem<?> selectedItem);
 }
 ```
 

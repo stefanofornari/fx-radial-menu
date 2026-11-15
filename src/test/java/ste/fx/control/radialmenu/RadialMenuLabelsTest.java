@@ -16,6 +16,7 @@
 package ste.fx.control.radialmenu;
 
 import javafx.application.Platform;
+import javafx.beans.property.SimpleDoubleProperty;
 import javafx.geometry.Bounds;
 import javafx.geometry.Point2D;
 import javafx.scene.Group;
@@ -34,7 +35,9 @@ import java.nio.file.Path;
 import java.util.List;
 
 import static org.assertj.core.api.BDDAssertions.then;
+import static org.assertj.core.api.BDDAssertions.thenThrownBy;
 import static org.assertj.core.api.BDDAssertions.within;
+import static ste.fx.control.radialmenu.RadialMenuTestSupport.click;
 
 class RadialMenuLabelsTest {
 
@@ -141,6 +144,27 @@ class RadialMenuLabelsTest {
 
         menu.labelRadiusRatio(2.0);
         then(menu.labelRadiusRatio()).isEqualTo(1.0);
+    }
+
+    @Test
+    void bound_label_radius_ratio_is_reported_clamped() {
+        RadialMenu menu = fourItems();
+        SimpleDoubleProperty external = new SimpleDoubleProperty(2.0);
+
+        menu.labelRadiusRatioProperty().bind(external);
+
+        then(menu.labelRadiusRatio()).isEqualTo(1.0);
+
+        external.set(-1.0);
+        then(menu.labelRadiusRatio()).isZero();
+    }
+
+    @Test
+    void labels_view_is_read_only() {
+        RadialMenu menu = fourItems();
+
+        thenThrownBy(() -> menu.labels().clear())
+                .isInstanceOf(UnsupportedOperationException.class);
     }
 
     @Test
@@ -271,12 +295,12 @@ class RadialMenuLabelsTest {
         then(menu.labels().get(0).getParent().getPseudoClassStates())
                 .doesNotContain(PseudoClass.getPseudoClass("hover"));
 
-        menu.selectItemForTesting(menu.items().get(1));
+        click(menu, menu.items().get(1));
         menu.applyCss();
         then(menu.labels().get(0).getFill()).isEqualTo(Color.BLACK);
         then(menu.labels().get(1).getFill()).isEqualTo(Color.RED);
 
-        menu.selectItemForTesting(menu.items().get(0));
+        click(menu, menu.items().get(0));
         menu.applyCss();
         then(menu.labels().get(0).getFill()).isEqualTo(Color.RED);
         then(menu.labels().get(1).getFill()).isEqualTo(Color.BLACK);
@@ -287,7 +311,7 @@ class RadialMenuLabelsTest {
         RadialMenu menu = fourItems();
         style(menu, ".radial-menu { -rm-segment-bg-selected: blue; }");
 
-        menu.selectItemForTesting(menu.items().get(0));
+        click(menu, menu.items().get(0));
         menu.applyCss();
 
         then(((javafx.scene.shape.Path) menu.getChildren().get(0)).getFill()).isEqualTo(Color.BLUE);
@@ -298,7 +322,7 @@ class RadialMenuLabelsTest {
     void label_state_survives_items_rebuild() {
         RadialMenu menu = new RadialMenu(List.of(item("Scope"), item("Story")));
 
-        menu.selectItemForTesting(menu.items().get(1));
+        click(menu, menu.items().get(1));
         menu.items().add(item("Extra"));
 
         Text selected = menu.labels().get(1);

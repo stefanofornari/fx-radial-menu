@@ -63,8 +63,10 @@ public class RadialMenu extends Pane {
     private final InnerRadiusRatioProperty innerRadiusRatio;
     private final FontSizeProperty labelFontSize;
     private final RatioProperty labelRadiusRatio;
+    private final ObservableList<Text> labelsView;
     private MenuItemSelectionCallback selectionCallback;
     private MenuItem<?> selectedItem;
+    private boolean derivingFontSize;
 
     public RadialMenu(List<? extends MenuItem<?>> items) {
         this(items, null);
@@ -74,6 +76,7 @@ public class RadialMenu extends Pane {
         this.items = FXCollections.observableArrayList(items);
         this.segments = FXCollections.observableArrayList();
         this.labels = FXCollections.observableArrayList();
+        this.labelsView = FXCollections.unmodifiableObservableList(labels);
         this.labelLayer = new Group();
         this.labelLayer.getStyleClass().add("radial-menu-label-layer");
         this.labelLayer.setMouseTransparent(true);
@@ -85,18 +88,26 @@ public class RadialMenu extends Pane {
                 LABEL_RADIUS_RATIO_META, "labelRadiusRatio", DEFAULT_LABEL_RADIUS_RATIO);
         this.selectionCallback = selectionCallback;
         getStyleClass().add("radial-menu");
-        getStylesheets().add(getClass().getResource("/ste/fx/control/radialmenu/radial-menu.css").toExternalForm());
+        getStylesheets().add(RadialMenu.class.getResource("/ste/fx/control/radialmenu/radial-menu.css").toExternalForm());
         this.items.addListener((ListChangeListener<MenuItem<?>>) change -> rebuild());
         this.diameter.addListener((obs, oldValue, newValue) -> {
             updateSizing();
             if (!labelFontSize.explicit() && !labelFontSize.isBound()) {
-                labelFontSize.setDerived(defaultLabelFontSize());
+                derivingFontSize = true;
+                try {
+                    labelFontSize.setDerived(defaultLabelFontSize());
+                } finally {
+                    derivingFontSize = false;
+                }
             }
             rebuild();
         });
         this.innerRadiusRatio.addListener((obs, oldValue, newValue) -> rebuild());
         this.labelRadiusRatio.addListener((obs, oldValue, newValue) -> positionLabels());
-        this.labelFontSize.addListener((obs, oldValue, newValue) -> buildLabels());
+        this.labelFontSize.addListener((obs, oldValue, newValue) -> {
+            // rebuild() right after a derived change already rebuilds the labels
+            if (!derivingFontSize) buildLabels();
+        });
         updateSizing();
         buildSegments();
     }
@@ -158,7 +169,7 @@ public class RadialMenu extends Pane {
     }
 
     public ObservableList<Text> labels() {
-        return labels;
+        return labelsView;
     }
 
     Group labelLayer() {
@@ -450,11 +461,6 @@ public class RadialMenu extends Pane {
         }
     }
 
-    // Package-private for testing
-    void selectItemForTesting(MenuItem<?> item) {
-        selectItem(item);
-    }
-
     private Path createSegment(double innerR, double outerR, double centerX, double centerY,
                                double startAngleDegrees, double sweepAngleDegrees) {
         Path path = new Path();
@@ -529,8 +535,18 @@ public class RadialMenu extends Pane {
         }
 
         @Override
+        public double get() {
+            return clamp(super.get());
+        }
+
+        @Override
         public void set(double value) {
-            super.set(Math.max(0.0, value));
+            super.set(clamp(value));
+        }
+
+        private static double clamp(double value) {
+            if (Double.isNaN(value)) return 0.0;
+            return Math.max(0.0, value);
         }
     }
 
@@ -558,6 +574,11 @@ public class RadialMenu extends Pane {
     private static final class RatioProperty extends SimpleStyleableDoubleProperty {
         RatioProperty(CssMetaData<? extends Styleable, Number> metaData, String name, double initialValue) {
             super(metaData, null, name, initialValue);
+        }
+
+        @Override
+        public double get() {
+            return clamp(super.get());
         }
 
         @Override
