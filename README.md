@@ -251,20 +251,6 @@ public class MyApp extends Application {
 }
 ```
 
-### Available AtlantaFX Themes (base module)
-
-| Theme Class | Variant |
-|-------------|---------|
-| `PrimerLight` | Light (default GitHub-like) |
-| `PrimerDark` | Dark |
-| `Dracula` | Dark (popular community theme) |
-| `CupertinoLight` | Light (macOS-like) |
-| `CupertinoDark` | Dark (macOS-like) |
-| `NordLight` | Light (Nord color palette) |
-| `NordDark` | Dark (Nord color palette) |
-
-See [AtlantaFX themes documentation](https://mkpaz.github.io/atlantafx/) for complete list.
-
 ## Demo Application
 
 Run the included demo to see the component in action:
