@@ -76,6 +76,8 @@ Extends `Pane`. Renders menu items as wedge-shaped segments around a central hub
 | `diameter()` / `diameter(double)` | `double` / `void` | Reads or sets the diameter; non-positive values render no wedges |
 | `innerRadiusRatioProperty()` | `DoubleProperty` | Hub opening relative to the outer radius (default `60 / 135`); clamped to `[0, 1)` |
 | `innerRadiusRatio()` / `innerRadiusRatio(double)` | `double` / `void` | Reads or sets the hub ratio |
+| `hubVisibleProperty()` | `BooleanProperty` | Whether the hub is present (default `true`); bindable. When `false` the hub shrinks to radius 0 and the wedges reach the centre; `innerRadiusRatio` is kept and applies again when the hub is shown |
+| `hubVisible()` / `hubVisible(boolean)` | `boolean` / `void` | Reads or sets the hub presence |
 | `labelRadiusRatioProperty()` | `DoubleProperty` | Label distance ratio within the radial band (default `0.5`) |
 | `labelRadiusRatio()` / `labelRadiusRatio(double)` | `double` / `void` | Reads or sets the label distance ratio; values are clamped to `[0, 1]` |
 | `labelFontSizeProperty()` | `DoubleProperty` | Base label font size (default `13.5`, i.e. diameter x 0.05) |
@@ -143,7 +145,7 @@ The default font size follows the current diameter. Explicitly setting `-rm-labe
 
 ### Sizing
 
-The control's footprint is driven by the bindable `diameter` property, and its hub by `innerRadiusRatio` (outer radius = `diameter / 2`, inner radius = outer radius x ratio). All wedges, hub, and labels scale when either property changes; layout bounds stay exactly `[0, 0, diameter, diameter]` and hover/selection never change the footprint. Content is clipped to that square, and segment strokes are a uniform 2 px in normal, hover, and selected states.
+The control's footprint is driven by the bindable `diameter` property, and its hub by `innerRadiusRatio` (outer radius = `diameter / 2`, inner radius = outer radius x ratio); setting `hubVisible` to `false` collapses the hub to radius 0 regardless of the ratio. The hub itself is just the opening, so any content you place there (the demo shows a centre circle and label) is yours to hide, for example by binding its `visible` property to `hubVisibleProperty()`. All wedges, hub, and labels scale when either property changes; layout bounds stay exactly `[0, 0, diameter, diameter]` and hover/selection never change the footprint. Content is clipped to that square, and segment strokes are a uniform 2 px in normal, hover, and selected states.
 
 ```java
 radialMenu.diameterProperty().bind(promptInput.heightProperty());

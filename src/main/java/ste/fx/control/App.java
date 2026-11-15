@@ -21,6 +21,7 @@ import ste.fx.control.radialmenu.RadialMenu;
 import javafx.application.Application;
 import javafx.beans.binding.Bindings;
 import javafx.scene.Scene;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.Slider;
 import javafx.scene.layout.Pane;
@@ -77,6 +78,15 @@ public class App extends Application {
         StackPane hubStack = new StackPane(centerCircle, centerLabel);
         hubStack.setPickOnBounds(false);
 
+        CheckBox hubCheck = new CheckBox("Show hub");
+        hubCheck.setSelected(true);
+        hubCheck.setLayoutX(10);
+        hubCheck.setLayoutY(10);
+        radialMenu.hubVisibleProperty().bind(hubCheck.selectedProperty());
+        // hiding the hub also hides the centre circle and its label
+        hubStack.visibleProperty().bind(radialMenu.hubVisibleProperty());
+        hubSlider.disableProperty().bind(hubCheck.selectedProperty().not());
+
         radialMenu.layoutXProperty().bind(
                 canvasPane.widthProperty().divide(2).subtract(radialMenu.diameterProperty().divide(2)));
         radialMenu.layoutYProperty().bind(
@@ -97,7 +107,7 @@ public class App extends Application {
         hubValue.layoutXProperty().bind(canvasPane.widthProperty().divide(2).subtract(45));
         hubValue.layoutYProperty().bind(canvasPane.heightProperty().subtract(80));
 
-        canvasPane.getChildren().addAll(radialMenu, hubStack, sizeSlider, sizeValue, hubSlider, hubValue);
+        canvasPane.getChildren().addAll(radialMenu, hubStack, hubCheck, sizeSlider, sizeValue, hubSlider, hubValue);
 
         Scene scene = new Scene(canvasPane, 450, 450);
         // Load radial menu AtlantaFX integration at scene level

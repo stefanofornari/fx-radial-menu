@@ -15,7 +15,9 @@
  */
 package ste.fx.control.radialmenu;
 
+import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.DoubleProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.css.SimpleStyleableDoubleProperty;
 import javafx.collections.FXCollections;
@@ -61,6 +63,7 @@ public class RadialMenu extends Pane {
     private final Group labelLayer;
     private final DiameterProperty diameter;
     private final InnerRadiusRatioProperty innerRadiusRatio;
+    private final BooleanProperty hubVisible;
     private final FontSizeProperty labelFontSize;
     private final RatioProperty labelRadiusRatio;
     private final ObservableList<Text> labelsView;
@@ -82,6 +85,7 @@ public class RadialMenu extends Pane {
         this.labelLayer.setMouseTransparent(true);
         this.diameter = new DiameterProperty(DEFAULT_DIAMETER);
         this.innerRadiusRatio = new InnerRadiusRatioProperty(DEFAULT_INNER_RADIUS_RATIO);
+        this.hubVisible = new SimpleBooleanProperty(true);
         this.labelFontSize = new FontSizeProperty(
                 LABEL_FONT_SIZE_META, "labelFontSize", DEFAULT_LABEL_FONT_SIZE);
         this.labelRadiusRatio = new RatioProperty(
@@ -103,6 +107,7 @@ public class RadialMenu extends Pane {
             rebuild();
         });
         this.innerRadiusRatio.addListener((obs, oldValue, newValue) -> rebuild());
+        this.hubVisible.addListener((obs, oldValue, newValue) -> rebuild());
         this.labelRadiusRatio.addListener((obs, oldValue, newValue) -> positionLabels());
         this.labelFontSize.addListener((obs, oldValue, newValue) -> {
             // rebuild() right after a derived change already rebuilds the labels
@@ -142,6 +147,23 @@ public class RadialMenu extends Pane {
 
     public final void innerRadiusRatio(double value) {
         innerRadiusRatio.set(value);
+    }
+
+    /**
+     * Whether the hub opening is present. When {@code false} the hub shrinks to
+     * radius 0 and the wedges extend to the centre; {@link #innerRadiusRatio()}
+     * is kept and applies again as soon as the hub is shown.
+     */
+    public final BooleanProperty hubVisibleProperty() {
+        return hubVisible;
+    }
+
+    public final boolean hubVisible() {
+        return hubVisible.get();
+    }
+
+    public final void hubVisible(boolean value) {
+        hubVisible.set(value);
     }
 
     public final DoubleProperty labelRadiusRatioProperty() {
@@ -222,7 +244,7 @@ public class RadialMenu extends Pane {
     }
 
     private double innerRadius() {
-        return outerRadius() * innerRadiusRatio();
+        return hubVisible.get() ? outerRadius() * innerRadiusRatio() : 0.0;
     }
 
     private double defaultLabelFontSize() {

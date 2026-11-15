@@ -160,6 +160,22 @@ class RadialMenuLabelsTest {
     }
 
     @Test
+    void labels_use_the_full_band_when_the_hub_is_hidden() {
+        RadialMenu menu = fourItems();
+
+        menu.hubVisible(false);
+
+        then(menu.labels()).hasSize(4);
+        for (int i = 0; i < menu.labels().size(); i++) {
+            double angle = Math.toRadians(-90.0 + (i + 0.5) * 90.0);
+            double radius = 0.5 * OUTER_RADIUS;
+            Point2D expected = new Point2D(
+                    CENTER + radius * Math.cos(angle), CENTER + radius * Math.sin(angle));
+            then(center(menu.labels().get(i)).distance(expected)).isLessThan(0.5);
+        }
+    }
+
+    @Test
     void labels_view_is_read_only() {
         RadialMenu menu = fourItems();
 

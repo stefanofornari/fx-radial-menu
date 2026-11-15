@@ -16,6 +16,7 @@
 package ste.fx.control.radialmenu;
 
 import javafx.application.Platform;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.geometry.BoundingBox;
 import javafx.geometry.Bounds;
@@ -222,6 +223,52 @@ class RadialMenuSizingTest {
         ArcTo innerStart = (ArcTo) segment(menu, 0).getElements().get(3);
         then(innerStart.getX()).isCloseTo(135.0, within(1e-9));
         then(innerStart.getY()).isCloseTo(135.0 - 33.75, within(1e-9));
+    }
+
+    @Test
+    void hub_is_visible_by_default() {
+        then(fourItems().hubVisible()).isTrue();
+    }
+
+    @Test
+    void hidden_hub_shrinks_to_radius_zero_without_resizing() {
+        RadialMenu menu = fourItems();
+        menu.resize(270, 270);
+
+        menu.hubVisible(false);
+
+        then(menu.getLayoutBounds()).isEqualTo(new BoundingBox(0, 0, 270, 270));
+        ArcTo innerStart = (ArcTo) segment(menu, 0).getElements().get(3);
+        then(innerStart.getX()).isCloseTo(135.0, within(1e-9));
+        then(innerStart.getY()).isCloseTo(135.0, within(1e-9));
+    }
+
+    @Test
+    void showing_the_hub_again_restores_the_inner_radius_ratio() {
+        RadialMenu menu = fourItems();
+        menu.innerRadiusRatio(0.25);
+
+        menu.hubVisible(false);
+        menu.hubVisible(true);
+
+        then(menu.innerRadiusRatio()).isEqualTo(0.25);
+        ArcTo innerStart = (ArcTo) segment(menu, 0).getElements().get(3);
+        then(innerStart.getY()).isCloseTo(135.0 - 33.75, within(1e-9));
+    }
+
+    @Test
+    void hub_visible_can_be_bound() {
+        RadialMenu menu = fourItems();
+        SimpleBooleanProperty external = new SimpleBooleanProperty(false);
+
+        menu.hubVisibleProperty().bind(external);
+
+        then(menu.hubVisible()).isFalse();
+        ArcTo innerStart = (ArcTo) segment(menu, 0).getElements().get(3);
+        then(innerStart.getY()).isCloseTo(135.0, within(1e-9));
+
+        external.set(true);
+        then(menu.hubVisible()).isTrue();
     }
 
     @Test
